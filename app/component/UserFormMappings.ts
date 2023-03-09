@@ -1,13 +1,12 @@
 import { HTMLInputTypeAttribute } from "react";
 import { RegisterOptions } from "react-hook-form";
 
-const required = true;
-const TITLE_REQUIRED = 'This field is required'
-
+const required = "This field is required";
 const PHONE_FORMAT = "\\+?[0-9]{8,12}";
+const USERNAME_FORMAT = "^[A-Za-z0-9_]+$";
 
 export interface IFormValues {
-  Name: string;
+  Username: string;
   "E-Mail Address": string;
   "Phone Number": number;
   Gender: boolean;
@@ -35,11 +34,21 @@ export type FieldAttr = {
 export const formMappings: FieldAttr[] = [
   {
     mode: "input",
-    id: "name",
-    label: "Name",
+    id: "username",
+    label: "Username",
     span: 3,
     type: "text",
-    opts: { required: TITLE_REQUIRED},
+    opts: {
+      required,
+      pattern: {
+        value: new RegExp(USERNAME_FORMAT),
+        message: "Only alphabetical characters and underscores are allowed",
+      },
+      minLength: {
+        value: 6,
+        message: "At least 6 characters required",
+      },
+    },
   },
   {
     mode: "input",
@@ -47,7 +56,7 @@ export const formMappings: FieldAttr[] = [
     label: "E-Mail Address",
     span: 3,
     type: "email",
-    opts: { required: TITLE_REQUIRED },
+    opts: { required },
   },
   {
     mode: "input",
@@ -104,7 +113,17 @@ export const formMappings: FieldAttr[] = [
     label: "Password",
     span: 3,
     type: "password",
-    opts: { required },
+    opts: {
+      required,
+      pattern: {
+        value: new RegExp(USERNAME_FORMAT),
+        message: "Only alphabetical characters and underscores are allowed",
+      },
+      minLength: {
+        value: 6,
+        message: 'At least 6 characters are required'
+      }
+    },
   },
   {
     mode: "input",
@@ -112,6 +131,6 @@ export const formMappings: FieldAttr[] = [
     label: "Password Confirmation",
     span: 3,
     type: "password",
-    opts: { required: "repeat the password" },
+    opts: { required: "Password confirmation is required" },
   },
 ];

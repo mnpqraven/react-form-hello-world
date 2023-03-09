@@ -1,9 +1,9 @@
 "use client";
+import { onFailedSubmit, onSubmit } from "@/utils/formHandler";
+import { passwordValidator } from "@/utils/validator";
 import { useState } from "react";
-import { FieldErrors, RegisterOptions, useForm } from "react-hook-form";
-import { Input } from "./Common/Input";
-import { Select } from "./Common/Select";
-import { Textarea } from "./Common/Textarea";
+import { RegisterOptions, useForm } from "react-hook-form";
+import { Input, Select, Textarea } from "./Common";
 import { FieldAttr, formMappings, IFormValues } from "./UserFormMappings";
 
 const UserForm = () => {
@@ -16,16 +16,14 @@ const UserForm = () => {
   } = useForm<IFormValues>();
   const [data, setData] = useState("");
 
-  function passwordValidator(value: string) {
-    if (watch("Password") != value) {
-      return "Your passwords do not match";
-    }
-  }
-
-  function renderFormItem(item: FieldAttr): JSX.Element {
+  const renderFormItem = (item: FieldAttr): JSX.Element => {
     let opts: RegisterOptions = { ...item.opts };
     if (item.id === "password-confirm")
-      opts = { ...item.opts, validate: passwordValidator };
+      opts = {
+        ...item.opts,
+        validate: (value: string) =>
+          passwordValidator(watch("Password"), value),
+      };
     switch (item.mode) {
       case "input":
         return (
@@ -38,6 +36,7 @@ const UserForm = () => {
             title={item.title}
             pattern={item.pattern}
             onChange={() => clearErrors(item.label)}
+            isError={!!errors[item.label]?.message}
           />
         );
       case "select":
@@ -48,6 +47,7 @@ const UserForm = () => {
             register={register}
             registerOpts={opts}
             options={item.options!}
+            isError={!!errors[item.label]?.message}
           />
         );
       case "textarea":
@@ -58,30 +58,21 @@ const UserForm = () => {
             type={item.type}
             register={register}
             registerOpts={opts}
+            isError={!!errors[item.label]?.message}
           />
         );
     }
-  }
-
-  const onSubmit = (data: IFormValues) => {
-    console.log("form submitted");
-    setData(JSON.stringify(data));
   };
-
-  function onFailedSubmit(error: FieldErrors<IFormValues>) {
-    let list = [];
-    for (const field in error) {
-      list.push(`${field}: ${error[field as keyof IFormValues]?.message}`);
-    }
-    console.warn(list);
-  }
 
   return (
     <div className="formcontainer flex flex-col justify-between">
       <form
         id="userForm"
         className="flex flex-col justify-center p-5"
-        onSubmit={handleSubmit(onSubmit, onFailedSubmit)}
+        onSubmit={handleSubmit((data: IFormValues) => {
+          onSubmit(data);
+          setData(JSON.stringify(data));
+        }, onFailedSubmit)}
       >
         <div className="grid grid-cols-6 gap-6">
           {formMappings.map((item, index) => (
@@ -104,7 +95,7 @@ const UserForm = () => {
           submit
         </button>
       </div>
-      <p>data: {data}</p>
+      <p>Form data: {data}</p>
     </div>
   );
 };
