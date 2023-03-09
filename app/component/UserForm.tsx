@@ -11,10 +11,12 @@ const UserForm = () => {
     register,
     handleSubmit,
     watch,
-    clearErrors,
     reset,
     formState: { errors },
-  } = useForm<IFormValues>();
+  } = useForm<IFormValues>({
+    delayError: 750,
+    mode: "onChange",
+  });
   const [data, setData] = useState("");
 
   const renderFormItem = (item: FieldAttr): JSX.Element => {
@@ -36,7 +38,6 @@ const UserForm = () => {
             registerOpts={opts}
             title={item.title}
             pattern={item.pattern}
-            onChange={() => clearErrors(item.label)}
             isError={!!errors[item.label]?.message}
           />
         );
@@ -87,7 +88,12 @@ const UserForm = () => {
         </div>
       </form>
       <div className="flex justify-center">
-        <button className="bg-rose-600 hover:bg-rose-500" onClick={() => reset()}>reset form</button>
+        <button
+          className="bg-rose-600 hover:bg-rose-500"
+          onClick={() => reset()}
+        >
+          reset form
+        </button>
         <button
           className="bg-indigo-600 hover:bg-indigo-500"
           type="submit"
