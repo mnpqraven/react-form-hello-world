@@ -12,6 +12,7 @@ const UserForm = () => {
     handleSubmit,
     watch,
     clearErrors,
+    reset,
     formState: { errors },
   } = useForm<IFormValues>();
   const [data, setData] = useState("");
@@ -86,7 +87,7 @@ const UserForm = () => {
         </div>
       </form>
       <div className="flex justify-center">
-        <button className="bg-rose-600 hover:bg-rose-500">reset form</button>
+        <button className="bg-rose-600 hover:bg-rose-500" onClick={() => reset()}>reset form</button>
         <button
           className="bg-indigo-600 hover:bg-indigo-500"
           type="submit"
